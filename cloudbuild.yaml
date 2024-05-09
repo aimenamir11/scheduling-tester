@@ -1,27 +1,12 @@
-name: Scheduled Deployment
+steps:
+  - name: "gcr.io/cloud-builders/gcloud"  # Use the gcloud build image
+    args:
+      - "functions"
+      - "deploy"
+      - "openUrl"  # Replace with your Cloud Function name
+      - "--runtime=nodejs16"  # Specify the runtime
+      - "--trigger-topic=your-topic-name"  # The Pub/Sub topic to trigger the function
+      - "--entry-point=openUrlurl-open-topic"  # The function's entry point
+      - "--allow-unauthenticated"  # Allow public access if needed
 
-on:
-  schedule:
-    - cron: "*/10 * * * *"
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3 
-
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        project_id: scheduling-tester 
-   
-    - name: Deploy Cloud Function
-      run: |
-        gcloud functions deploy openUrl \
-          --runtime=nodejs16 \
-          --trigger-topic=url-open-topic \
-          --entry-point=openUrl \
-          --allow-unauthenticated
+timeout: "900s"  # Build timeout in seconds
